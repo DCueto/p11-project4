@@ -1,30 +1,30 @@
 <script>
   import logo from '../assets/filmin_logo_w.png';
 
+  let header;
 
-  // if(window.scrollY > 0){
-  //   console.log(window.scrollY);
-  // }
-  
-  // let header = document.querySelector('header');
-  // console.log(header);
+  function scrolled(event){
+    let scrollY = event.target.scrollingElement.scrollTop;
+    if(scrollY > 0 && header.classList.contains('nonScrolledHeader')){
+      header.classList.remove('nonScrolledHeader');
+      header.classList.add('scrolledHeader');
+      return;
+    } else if(scrollY <= 0 && header.classList.contains('scrolledHeader')){
+      header.classList.remove('scrolledHeader');
+      header.classList.add('nonScrolledHeader');
+    }
 
-  // window.addEventListener('scroll', ()=>{
-  //   if(window.scrollY > 0){
-  //     header.classList.add('scrolledHeader');
-  //     header.classList.remove('nonScrolledHeader');
-  //   } else{
-  //     header.classList.remove('scrolledHeader');
-  //     header.classList.add('nonScrolledHeader');
-  //   }
-  // });
+  }
 
 </script>
 
-<header class="nonScrolledHeader">
+<svelte:window on:scroll={scrolled} />
+
+<header bind:this={header} class="nonScrolledHeader">
   <div id="header_container">
     <div id="left_header">
-      <img id="logo" src={logo} />
+      <i class="fa-solid fa-bars burger-menu" style="color: #ffffff;"></i>
+      <img id="logo" src={logo} alt="Filmin logo" />
       <nav>
         <ul>
           <li><a href="#">Inicio</a></li>
@@ -42,33 +42,38 @@
       <i class="fa-solid fa-magnifying-glass search"></i>
     </div>
   </div>
+ 
 </header>
 
 
 <style>
 
   header{
-    height: 156px;
+    height: 67px;
     width: 100%;
     position: fixed;
-  }
-
-  header.nonScrolledHeader{
-    background: linear-gradient(rgba(7, 7, 19, 1) 0%, rgba(7, 7, 19, 0.81) 20%, rgba(7, 7, 19, 0) 100%);
-  }
-
-  header.scrolledHeader{
     background: rgba(7, 7, 19, 1);
   }
 
   header #header_container{
-    display: flex;
-    justify-content: space-between;
     height: 67px;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding: 0 64px;
   }
 
+  header.nonScrolledHeader{
+    background: linear-gradient(rgba(7, 7, 19, 1) 0%, rgba(7, 7, 19, 0.81) 20%, rgba(7, 7, 19, 0) 100%);
+    height: 156px;
+  }
+
+  header.scrolledHeader{
+    background: yellow;
+  }
+
+  
   header #header_container #left_header{
     display: flex;
     justify-content: flex-start;
@@ -116,6 +121,11 @@
     font-size: 13px;
    }
 
+  header i.burger-menu{
+    font-size: 22px;
+    display: none;
+  }
+
   header i.profile{
     width: 42px;
     height: 38px;
@@ -137,8 +147,40 @@
   }
 
   @media screen and (max-width: 1024px){
+    header{
+      height: 50px;
+    }
+
+    header #header_container{
+      height: 50px;
+    }
+
     nav{
       display: none;
     }
+
+    header i.burger-menu{
+      display: inline-block;
+    }
+
+    header #header_container #left_header{
+      gap: 20px;
+    }
+
+    header #left_header > img#logo{
+      height: 20px;
+    }
+
+    header #right_header > button.suscribe, header #right_header > i.profile{
+      display: none;
+    }
   }
+
+  @media screen and (max-width: 992px){
+    header div#header_container{
+      padding: 0 16px;
+    }
+  }
+
+
 </style>
