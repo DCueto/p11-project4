@@ -4,10 +4,7 @@
 
   import { onMount } from 'svelte';
 
-  import Carousel from 'svelte-carousel';
-
   export let fetchUrl, title;
-  // export let fetchOptions, settings;
 
   let moviesContainerEl, moviesSlider, leftBtn, rightBtn;
 
@@ -27,7 +24,7 @@
     const request = await fetch(fetchUrl, options);
     const response = await request.json();
 
-    console.log(response);
+    //console.log(response);
 
     if(request.ok){
       console.log(response);
@@ -63,11 +60,12 @@
     console.log(moviesContainerEl);
     moviesContainerEl.scrollBy({
       top: 0,
-      left: viewportWidth - 70,
+      left: viewportWidth,
       behavior: "smooth",
     });
 
-
+    // CAMBIAR LOS DISPLAYS NO FUNCIONA BIEN
+    
     setTimeout(()=>{
       if(moviesContainerEl.scrollLeft + moviesContainerEl.offsetWidth >= moviesContainerEl.scrollWidth){
         console.log("SCROLL MAX " + moviesContainerEl.scrollWidth);
@@ -78,8 +76,6 @@
 
     }, 1000);
   }
-
-  // PREGUNTAR A JAVI POR QUÉ SE LANZAN LAS DOS FUNCIONES AL PRESIONAR UN EVENTO
 
   function slideLeft(event){
     event.stopPropagation();
@@ -104,34 +100,38 @@
 
 <svelte:window on:resize={widthResized} />
 
-<section class="list">
+<section>
   <Title text={title} />
 
-  <section on:click={slideLeft} class="movies" bind:this={moviesSlider}>
+  <div bind:this={moviesSlider}>
 
-    <div bind:this={leftBtn} class="button-slider button-slider-left">
+    <button bind:this={leftBtn} on:click={slideLeft} class="button-slider-left">
       <i class="fa-solid fa-angle-left" style="color: #ffffff;"></i>
-    </div>
+    </button>
 
-    <div bind:this={rightBtn} on:click={slideRight} class="button-slider button-slider-right">
+    <button bind:this={rightBtn} on:click={slideRight} class="button-slider-right">
       <i class="fa-solid fa-angle-right" style="color: #ffffff;"></i>
-    </div>
+    </button>
 
-    <div class="movies-container" bind:this={moviesContainerEl}>
+    <div bind:this={moviesContainerEl}>
       {#each movies as movie}
         <Movie imageSrc={movie.img_src} />
       {/each}
     </div>
-  </section>
+  </div>
 </section>
 
 <style>
 
-  .movies{
+  section{
+    margin: 30px 0;
+  }
+
+  section > div{
     position: relative;
   }
 
-  .movies-container{
+  section > div > div{
     display: flex;
     gap: 10px;
     width: auto;
@@ -140,7 +140,7 @@
     padding-left: 60px;
   }
 
-  .list .button-slider{
+  section button{
     position: absolute;
     min-width: 40px;
     height: 100%;
@@ -151,16 +151,16 @@
     cursor: pointer;
   }
 
-  .list .button-slider i{
+  section button i{
     font-size: 30px;
   }
 
-  .list .button-slider-left{
+  section .button-slider-left{
     top: 0;
     left: 0;
   }
 
-  .list .button-slider-right{
+  section .button-slider-right{
     top: 0;
     right: 0;
   }
@@ -174,11 +174,11 @@
   }
 
   @media screen and (max-width: 992px){
-    .list section .button-slider{
+    section section button{
       display: none;
     }
 
-    .movies-container{
+    section > div > div{
       padding-left: 16px;
       padding: 0 16px;
     }

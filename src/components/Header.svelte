@@ -1,9 +1,33 @@
 <script>
   import logo from '../assets/filmin_logo_w.png';
 
+  import {onMount} from 'svelte'
+
   let header;
 
+  // NO PUEDO INTRODUCIR EL EVENTO "SCROLLED" EN ONMOUNT
+  // ERROR: Header.svelte:27 Uncaught ReferenceError: scrolled is not defined 
+  // at mount
+
+  // onMount(()=>{
+
+  //   function scrolled(event){
+
+  //     let scrollY = event.target.scrollingElement.scrollTop;
+  //     if(scrollY > 0 && header.classList.contains('nonScrolledHeader')){
+  //       header.classList.remove('nonScrolledHeader');
+  //       header.classList.add('scrolledHeader');
+  //       return;
+  //     } else if(scrollY <= 0 && header.classList.contains('scrolledHeader')){
+  //       header.classList.remove('scrolledHeader');
+  //       header.classList.add('nonScrolledHeader');
+  //     }
+  //   }
+
+  // });
+
   function scrolled(event){
+
     let scrollY = event.target.scrollingElement.scrollTop;
     if(scrollY > 0 && header.classList.contains('nonScrolledHeader')){
       header.classList.remove('nonScrolledHeader');
@@ -13,18 +37,19 @@
       header.classList.remove('scrolledHeader');
       header.classList.add('nonScrolledHeader');
     }
-
+    
   }
+
 
 </script>
 
 <svelte:window on:scroll={scrolled} />
 
 <header bind:this={header} class="nonScrolledHeader">
-  <div id="header_container">
+  <div>
     <div id="left_header">
       <i class="fa-solid fa-bars burger-menu" style="color: #ffffff;"></i>
-      <img id="logo" src={logo} alt="Filmin logo" />
+      <img src={logo} alt="Filmin logo" />
       <nav>
         <ul>
           <li><a href="#">Inicio</a></li>
@@ -53,9 +78,10 @@
     width: 100%;
     position: fixed;
     background: rgba(7, 7, 19, 1);
+    z-index: 999;
   }
 
-  header #header_container{
+  header > div{
     height: 67px;
     width: 100%;
     display: flex;
@@ -74,7 +100,7 @@
   }
 
   
-  header #header_container #left_header{
+  header > div #left_header{
     display: flex;
     justify-content: flex-start;
     height: 100%;
@@ -82,7 +108,7 @@
     gap: 60px;
   }
 
-  header #header_container #right_header{
+  header > div #right_header{
     display: flex;
     justify-content: flex-end;
     height: 100%;
@@ -90,7 +116,7 @@
     gap: 20px;
   }
 
-  header img#logo{
+  header > div > div > img{
     max-height: 25px;
   }
 
@@ -151,7 +177,7 @@
       height: 50px;
     }
 
-    header #header_container{
+    header > div{
       height: 50px;
     }
 
@@ -163,11 +189,11 @@
       display: inline-block;
     }
 
-    header #header_container #left_header{
+    header > div #left_header{
       gap: 20px;
     }
 
-    header #left_header > img#logo{
+    header > div > div > img{
       height: 20px;
     }
 
@@ -177,7 +203,7 @@
   }
 
   @media screen and (max-width: 992px){
-    header div#header_container{
+    header > div{
       padding: 0 16px;
     }
   }
