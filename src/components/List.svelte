@@ -27,7 +27,7 @@
     //console.log(response);
 
     if(request.ok){
-      console.log(response);
+      // console.log(response);
 
       movies = response.results.map(movie => {
         const movies = {
@@ -39,9 +39,9 @@
         };
         return movies;
       });
-      console.log(movies);
+      // console.log(movies);
     } else{
-      console.log(response);
+      // console.log(response);
     }
 
   });
@@ -57,7 +57,7 @@
     event.stopPropagation();
     widthResized();
 
-    console.log(moviesContainerEl);
+    // console.log(moviesContainerEl);
     moviesContainerEl.scrollBy({
       top: 0,
       left: viewportWidth,
