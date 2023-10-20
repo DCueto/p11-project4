@@ -18,12 +18,7 @@
   onMount(async ()=>{
     console.log(content);
 
-    slideEls = [...content.querySelectorAll('div')];
-    slideEls[0].classList.add('active');
-
     buttonsSlides = [...content.querySelectorAll('div > section i')];
-    console.log(slideEls);
-    console.log(buttonsSlides);
 
 
     try{
@@ -78,8 +73,14 @@
     }
     
     setTimeout(()=>{
-      console.log('onmount listmovies', listMovies);
-    }, 2000);
+      listMovies = listMovies.slice(0, 8);
+      slideEls = [...content.querySelectorAll('.movie')];
+      slideEls = slideEls.slice(0, 8);
+      slideEls[0].classList.add('active');
+
+      console.log(listMovies);
+      console.log(slideEls);
+    }, 1000);
 
   });
 
@@ -135,12 +136,15 @@
   <div class="wrapper" bind:this={content}>
     <button class="prev" on:click={prevSlide}></button>
     <button class="next" on:click={nextSlide}></button>
-    {#each fetchExample as movie, i}
-      <div data-id={i}>
-        <img src="#" alt="">
-        <h2>TÍTULO DE PELÍCULAS</h2>
-        <h3>Nombre Autor</h3>
-        <button>VER AHORA</button>
+    {#each listMovies as movie, i}
+      <div class="movie" data-id={i}>
+        <aside class="gradient"></aside>
+        <img src={`https://image.tmdb.org/t/p/w500${movie.backdrop_img}`} alt="">
+        <div>
+          <h2>{movie.title}</h2>
+          <h3>{movie.director}</h3>
+          <button>VER AHORA</button>
+        </div>
       </div>
     {/each}
 
@@ -154,22 +158,30 @@
 
 <style>
   .wrapper{
-    width: 90%;
+    width: 100%;
     overflow-x: scroll;
     border: 2px solid black;
     position: relative;
-    height: 300px;
+    height: 600px;
     margin: 0 auto;
     display: flex;
   }
 
-  .wrapper button{
+  .wrapper > button{
+    background-color: unset;
     position: absolute;
     width: 50px;
     height: 100%;
-    opacity: .3;
+    opacity: 1;
     cursor: pointer;
     z-index: 60;
+    border: 0;
+    transition: background-color .2s, opacity .2s;
+  }
+
+  .wrapper > button:hover{
+    background-color: black;
+    opacity: .2;
   }
 
   .wrapper .prev{
@@ -182,7 +194,7 @@
     right: 0;
   }
 
-  .wrapper div:nth-of-type(1){
+  /* .wrapper div:nth-of-type(1){
     background-color: blue;
   }
   .wrapper div:nth-of-type(2){
@@ -191,7 +203,6 @@
 
   .wrapper div:nth-of-type(3){
     background-color: yellow;
-    /* transform: translateX(-100px); */
   }
   .wrapper div:nth-of-type(4){
     background-color: orange;
@@ -207,16 +218,70 @@
   }
   .wrapper div:nth-of-type(8){
     background-color: lightgrey;
-  }
+  } */
 
 
-  .wrapper div{
+  .wrapper > div{
     flex-shrink: 0;
     width: 100%;
     height: 100%;
     position: absolute;
     opacity: 0;
     z-index: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    /* background: linear-gradient(rgba(6, 6, 19, 0) 0%, rgba(6, 6, 19, .3) 55%, rgba(6, 6, 19, .4) 60%, rgba(6, 6, 19, .8) 80%, rgba(6, 6, 19, 1) 100%); */
+  }
+
+  .wrapper > div > .gradient{
+    z-index: 5;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: linear-gradient(rgba(6, 6, 19, 0) 0%, rgba(6, 6, 19, .3) 55%, rgba(6, 6, 19, .4) 60%, rgba(6, 6, 19, .8) 80%, rgba(6, 6, 19, 1) 100%);
+  }
+
+  .wrapper > div > img{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .wrapper > div > div{
+    margin-bottom: 10%;
+    margin-left: 60px;
+    position: relative;
+    z-index: 6;
+  }
+
+  .wrapper > div > div > h2{
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
+
+  .wrapper > div > div > h3{
+    font-size: 24px;
+    font-weight: bold;
+    color: lightgray;
+    max-width: 400px;
+    margin-bottom: 20px;
+  }
+
+  .wrapper > div > div > button{
+    height: auto;
+    width: auto;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 5px;
+    color: black;
+    font-size: 15px;
+    font-weight: 600;
   }
 
   div > section{
