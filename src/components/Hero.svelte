@@ -20,7 +20,6 @@
 
     buttonsSlides = [...content.querySelectorAll('div > section i')];
 
-
     try{
       const options = {
         method: 'GET',
@@ -29,22 +28,19 @@
           Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxM2FkNzIwZWM4NTY2NjNjNWI0ZjFkODk3MzI3OWQwMyIsInN1YiI6IjY1MmQwMGNkMWYzZTYwMDEzOTlmOGU1YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.mbSJcAq51x8-kXgJEdKY_1asnZc7RW4sBIl-B-N9qzU'
         }
       };
-      const request = await fetch('https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1', options);
+      const request = await fetch(fetchUrl, options);
       const response = await request.json();
-      movies = response.results;
+      movies = response.results.slice(0, 8);
       
-      movies.forEach(async (movie) =>{
+      for await(let movie of movies){
         let movieDetails;
+        const movieURL = `https://api.themoviedb.org/3/movie/${movie.id}/credits?language=en-US`;
 
-        try{
-          const requestDetails = await fetch(`https://api.themoviedb.org/3/movie/${movie.id}/credits?language=en-US`, options);
-          const responseDetails = await requestDetails.json();
-          movieDetails = responseDetails.crew;
+        const requestDetails = await fetch(movieURL, options);
+        const responseDetails = await requestDetails.json();
+        movieDetails = responseDetails.crew;
 
-        } catch (error){
-          console.log('Error picking movie ', error);
-        } finally{
-
+        if(requestDetails.ok){
           const director = movieDetails.find(crewMember => {
             return crewMember.job === 'Director';
           });
@@ -59,28 +55,26 @@
           }
 
           listMovies = [...listMovies, item];
-          console.log('Movie fetch', listMovies);
+
+        } else{
+          console.log('Error picking movie');
         }
-  
-      });
-      console.log('Fetch PRINCIPAL peliculas', listMovies);
+
+      }
+
     } catch (error){
       console.log('Error picking movies ', error);
 
     } finally{
       console.log("Ended fetch process.");
-      console.log('Fetch PRINCIPAL peliculas', listMovies);
     }
-    
-    setTimeout(()=>{
-      listMovies = listMovies.slice(0, 8);
-      slideEls = [...content.querySelectorAll('.movie')];
-      slideEls = slideEls.slice(0, 8);
-      slideEls[0].classList.add('active');
 
-      console.log(listMovies);
-      console.log(slideEls);
-    }, 1000);
+    console.log('Test de listmovies: ', listMovies);
+
+    slideEls = [...content.querySelectorAll('.movie')];
+    slideEls = slideEls.slice(0, 8);
+    slideEls[0].classList.add('active');
+
 
   });
 
@@ -117,16 +111,18 @@
 
   }
 
+
   function selectSlide(e){
-    e.preventDefault();
+
     e.stopPropagation();
-    console.log(buttonsSlides);
+
     const data_id = parseInt(e.target.dataset.id);
     if(e.target.dataset.id){
       slideEls[currentPosition].classList.remove('active');
       currentPosition = data_id;
       slideEls[currentPosition].classList.add('active');
     }
+
   }
 
 </script>
@@ -134,8 +130,8 @@
 <section>
 
   <div class="wrapper" bind:this={content}>
-    <button class="prev" on:click={prevSlide}></button>
-    <button class="next" on:click={nextSlide}></button>
+    <button class="prev" on:click={prevSlide}><i class="fa-solid fa-angle-left" style="color: #ffffff;"></i></button>
+    <button class="next" on:click={nextSlide}><i class="fa-solid fa-angle-right" style="color: #ffffff;"></i></button>
     {#each listMovies as movie, i}
       <div class="movie" data-id={i}>
         <aside class="gradient"></aside>
@@ -149,7 +145,7 @@
     {/each}
 
     <section on:click={selectSlide}>
-      {#each fetchExample as movie, i}
+      {#each listMovies as movie, i}
         <i data-id={i}></i>
       {/each}
     </section>
@@ -172,16 +168,15 @@
     position: absolute;
     width: 50px;
     height: 100%;
-    opacity: 1;
+    opacity: .3;
     cursor: pointer;
     z-index: 60;
     border: 0;
-    transition: background-color .2s, opacity .2s;
+    transition: opacity .1s;
   }
 
   .wrapper > button:hover{
-    background-color: black;
-    opacity: .2;
+    opacity: 1;
   }
 
   .wrapper .prev{
@@ -194,32 +189,14 @@
     right: 0;
   }
 
-  /* .wrapper div:nth-of-type(1){
-    background-color: blue;
-  }
-  .wrapper div:nth-of-type(2){
-    background-color: red;
+  button i{
+    font-size: 30px;
+    color: rgba(255, 255, 255, .4);
   }
 
-  .wrapper div:nth-of-type(3){
-    background-color: yellow;
+  button i:hover{
+    color: rgba(255, 255, 255, 1);
   }
-  .wrapper div:nth-of-type(4){
-    background-color: orange;
-  }
-  .wrapper div:nth-of-type(5){
-    background-color: black;
-  }
-  .wrapper div:nth-of-type(6){
-    background-color: white;
-  }
-  .wrapper div:nth-of-type(7){
-    background-color: green;
-  }
-  .wrapper div:nth-of-type(8){
-    background-color: lightgrey;
-  } */
-
 
   .wrapper > div{
     flex-shrink: 0;
@@ -232,7 +209,6 @@
     flex-direction: column;
     justify-content: flex-end;
     overflow: hidden;
-    /* background: linear-gradient(rgba(6, 6, 19, 0) 0%, rgba(6, 6, 19, .3) 55%, rgba(6, 6, 19, .4) 60%, rgba(6, 6, 19, .8) 80%, rgba(6, 6, 19, 1) 100%); */
   }
 
   .wrapper > div > .gradient{
@@ -240,7 +216,7 @@
     width: 100%;
     height: 100%;
     position: absolute;
-    background: linear-gradient(rgba(6, 6, 19, 0) 0%, rgba(6, 6, 19, .3) 55%, rgba(6, 6, 19, .4) 60%, rgba(6, 6, 19, .8) 80%, rgba(6, 6, 19, 1) 100%);
+    background: linear-gradient(rgba(6, 6, 19, 0) 0%, rgba(6, 6, 19, .3) 60%, rgba(6, 6, 19, .4) 65%, rgba(6, 6, 19, .8) 85%, rgba(6, 6, 19, 1) 100%);
   }
 
   .wrapper > div > img{
@@ -251,7 +227,7 @@
   }
 
   .wrapper > div > div{
-    margin-bottom: 10%;
+    margin-bottom: 50px;
     margin-left: 60px;
     position: relative;
     z-index: 6;
@@ -310,6 +286,19 @@
   div > section i:hover{
     background-color: rgba(255, 255, 255, 1);
     transform: scale(1.4);
+  }
+
+  @media screen and (max-width: 900px){
+    .wrapper > div{
+      align-items: center;
+
+    }
+
+    .wrapper > div > div{
+      text-align: center;
+      margin-left: 0;
+      margin-bottom: 100px;
+    }
   }
 
 
